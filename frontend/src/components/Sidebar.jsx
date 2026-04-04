@@ -4,7 +4,7 @@ export default function Sidebar({ vehicles, activeVehicle, vehicleLoading, onSel
   return (
     <aside className="sidebar">
       <div className="logo">
-        <div className="logo-text"><span>auto</span>helper</div>
+        <div className="logo-text"><span>Auto</span>Helper</div>
       </div>
 
       <div className="upload-section">
