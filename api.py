@@ -7,7 +7,7 @@ load_dotenv()
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
     from langchain_huggingface import HuggingFaceEmbeddings
-    from langchain_chroma import Chroma
+    from langchain_pinecone import PineconeVectorStore
     from langchain_core.prompts import ChatPromptTemplate
     from langchain_core.output_parsers import StrOutputParser
     from langchain_core.runnables import RunnablePassthrough
@@ -89,10 +89,11 @@ def _build_chain(vehicle_id: str):
     if not target.exists():
         raise FileNotFoundError(f"Database not found: {target}")
 
-    db = Chroma(
-        persist_directory=str(target),
-        embedding_function=_get_embedding()
-    )
+    db = PineconeVectorStore.from_existing_index(
+    index_name=os.getenv("PINECONE_INDEX_NAME"),
+    embedding=_get_embedding(),
+    namespace=vehicle_id
+)
     retriever = db.as_retriever(search_kwargs={"k": 4})
     llm = ChatGoogleGenerativeAI(
         model=LLM_MODEL,

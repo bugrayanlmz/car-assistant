@@ -1,9 +1,12 @@
+from dotenv import load_dotenv
 import os
 from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
+from langchain_pinecone import PineconeVectorStore
+
+load_dotenv()
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -36,11 +39,6 @@ def create_index():
 
     for pdf in pdfs:
         vehicle_id = pdf.replace(".pdf", "")
-        target_folder = os.path.join(CHROMA_BASE, vehicle_id)
-        
-        if os.path.exists(target_folder):
-            print(f"[SKIPPED] {pdf} is already indexed ({target_folder}).")
-            continue
             
         print(f"[START] Reading and splitting {pdf}...")
         pdf_path = os.path.join(DATA_DIR, pdf)
@@ -49,11 +47,12 @@ def create_index():
         chunks = text_splitter.split_documents(pages)
         
         print(f"[INDEXING] Writing {pdf} ({len(chunks)} chunks) to database...")
-        Chroma.from_documents(
-            documents=chunks,
-            embedding=embedding_model,
-            persist_directory=target_folder
-        )
+        PineconeVectorStore.from_documents(
+    documents=chunks,
+    embedding=embedding_model,
+    index_name=os.getenv("PINECONE_INDEX_NAME"),
+    namespace=vehicle_id
+)
         print(f"[COMPLETED] {vehicle_id} is ready!\n")
         
     print("ALL TASKS FINISHED. Your databases are ready.")
