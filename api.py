@@ -6,7 +6,6 @@ load_dotenv()
 
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
-    from langchain_huggingface import HuggingFaceEmbeddings
     from langchain_pinecone import PineconeVectorStore
     from langchain_core.prompts import ChatPromptTemplate
     from langchain_core.output_parsers import StrOutputParser
@@ -15,6 +14,7 @@ try:
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import StreamingResponse
     from pydantic import BaseModel
+    from langchain_pinecone import PineconeEmbeddings
     import json
 except ImportError as e:
     raise RuntimeError(f"Missing dependency: {e}")
@@ -70,7 +70,10 @@ def _get_embedding():
     global embedding_model
     if embedding_model is None:
         print("Loading local embedding model...")
-        embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        embedding_model = PineconeEmbeddings(
+    model="multilingual-e5-large",
+    pinecone_api_key=os.getenv("PINECONE_API_KEY")
+)
     return embedding_model
 
 def _get_vehicle_list():

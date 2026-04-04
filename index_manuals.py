@@ -3,8 +3,9 @@ import os
 from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
+from langchain_pinecone import PineconeEmbeddings
+
 
 load_dotenv()
 
@@ -23,7 +24,10 @@ def create_index():
     os.makedirs(CHROMA_BASE, exist_ok=True)
     
     print("Loading local Embedding Model all-MiniLM-L6-v2")
-    embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embedding_model = PineconeEmbeddings(
+    model="multilingual-e5-large",
+    pinecone_api_key=os.getenv("PINECONE_API_KEY")
+)
 
     pdfs = [f for f in os.listdir(DATA_DIR) if f.endswith(".pdf")]
     
