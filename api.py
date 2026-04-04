@@ -74,20 +74,18 @@ def _get_embedding():
     return embedding_model
 
 def _get_vehicle_list():
-    if not Path(CHROMA_BASE).exists():
+    manuals_path = Path("manuals")
+    if not manuals_path.exists():
         return []
+    
     vehicles = []
-    for folder in sorted(Path(CHROMA_BASE).iterdir()):
-        if folder.is_dir():
-            vehicle_id = folder.name
-            vehicle_name = vehicle_id.replace("_", " ")
-            vehicles.append({"id": vehicle_id, "name": vehicle_name})
+    for file in sorted(manuals_path.glob("*.pdf")):
+        vehicle_id = file.stem
+        vehicle_name = vehicle_id.replace("_", " ")
+        vehicles.append({"id": vehicle_id, "name": vehicle_name})
     return vehicles
 
 def _build_chain(vehicle_id: str):
-    target = Path(CHROMA_BASE) / vehicle_id
-    if not target.exists():
-        raise FileNotFoundError(f"Database not found: {target}")
 
     db = PineconeVectorStore.from_existing_index(
     index_name=os.getenv("PINECONE_INDEX_NAME"),
