@@ -1,0 +1,25 @@
+# Python Environment
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.env
+
+# MacOS
+.DS_Store
+
+# Logs
+*.log
+
+# Database & Uploaded Files
+chroma_dbs/
+manuals/*
+!manuals/.gitkeep
+
+# Frontend Build & Modules
+frontend/node_modules/
+frontend/dist/
+frontend/.eslintcache
