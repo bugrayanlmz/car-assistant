@@ -74,16 +74,12 @@ def _get_embedding():
     return embedding_model
 
 def _get_vehicle_list():
-    manuals_path = Path("manuals")
-    if not manuals_path.exists():
+    try:
+        with open("vehicles.json", "r") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Araç listesi okuma hatası: {e}")
         return []
-    
-    vehicles = []
-    for file in sorted(manuals_path.glob("*.pdf")):
-        vehicle_id = file.stem
-        vehicle_name = vehicle_id.replace("_", " ")
-        vehicles.append({"id": vehicle_id, "name": vehicle_name})
-    return vehicles
 
 def _build_chain(vehicle_id: str):
 
