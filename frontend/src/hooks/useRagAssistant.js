@@ -12,7 +12,7 @@ export function useRagAssistant() {
 
   const { serverActive, serverLoading } = useServerStatus();
 
-  // Fetch available vehicles on load
+
   useEffect(() => {
     if (!serverActive) return;
     const fetchVehicles = async () => {
@@ -55,7 +55,7 @@ export function useRagAssistant() {
     const newMessage = { id: Date.now(), role: "user", content: question, time: getCurrentTime() };
     const aiMessageId = Date.now() + 1;
     
-    // Sadece kullanıcı mesajını ekle, AI placeholder'ını ilk veri gelince ekleyeceğiz
+    
     setMessages((m) => [...m, newMessage]);
     setLoading(true);
 
@@ -92,7 +92,6 @@ export function useRagAssistant() {
               break;
             }
 
-            // İlk veri ulaştığı an (TTFB) yükleniyor animasyonunu kapat ve yapay zeka mesajını ekle
             if (!aiMessageCreated) {
               aiMessageCreated = true;
               setLoading(false);

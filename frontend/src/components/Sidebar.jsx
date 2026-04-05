@@ -11,10 +11,21 @@ export default function Sidebar({ vehicles, activeVehicle, vehicleLoading, onSel
         <div className="section-label">Garage</div>
 
         {vehicles.length === 0 ? (
-          <div className="drop-zone" style={{ cursor: "default" }}>
-            <div className="drop-icon"><Car size={28} /></div>
-            <div className="drop-text">No vehicles found.<br /><strong>Run index_manuals.py first.</strong></div>
-          </div>
+           <div className="drop-zone" style={{ cursor: "default" }}>
+    {vehicleLoading ? (
+      <>
+        <div className="drop-icon shadow-none">
+          <Loader2 size={28} style={{ animation: "spin 1s linear infinite" }} />
+        </div>
+        <div className="drop-text">Vehicle information is loading...</div>
+      </>
+    ) : (
+      <>
+        <div className="drop-icon"><Car size={28} /></div>
+        <div className="drop-text">No vehicle found.</div>
+      </>
+    )}
+  </div>
         ) : (
           <div className="files-list">
             {vehicles.map((vehicle) => {
