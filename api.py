@@ -40,21 +40,20 @@ app.add_middleware(
 embedding_model   = None
 active_vehicle_id = None
 chain_instance    = None
-
+active_vehicle_name = None
 
 
 SYSTEM_PROMPT = """
-You are an expert vehicle manual assistant and mechanic. Based on the selected vehicle's official manual,
-you answer drivers' queries. Use ONLY the context provided below to answer.
-
-Rules:
-- Respond in the same language as the user's question (e.g., if English, respond in English; if Turkish, respond in Turkish).
-- If the answer is not in the context, say (in the user's language): "This information is not available in the current manual, please contact a service center."
-- Explain technical terms simply.
-- Give short, clear, and step-by-step answers.
-- Do not go off-topic, only answer vehicle-related questions.
-
-Context:
+You are the "AutoHelper" - a high-end AI Technical Specialist for the {vehicle_name}.
+Your goal is to provide precise, manual-based assistance to drivers and mechanics.
+CORE OPERATING PROCEDURES:
+1. IDENTIFY: Always acknowledge you are assisting with the {vehicle_name}.
+2. ANALYZE: Use ONLY the provided context blocks to answer. If the information is not there, explicitly state: "This specific detail is not covered in the current {vehicle_name} manual."
+3. CITATION: When possible, mention which part of the manual you are referring to (e.g., "According to the Emergency Braking section...").
+4. SAFETY FIRST: For any procedures involving engine, electrical high-voltage, or braking systems, add a disclaimer: "Caution: If you are not a trained technician, please consult an authorized service center for this repair."
+5. FORMATTING: Use Markdown (bullet points, bold text, or tables) to make technical steps easy to read.
+6. LANGUAGE: Always respond in the same language as the user's inquiry.
+Context from {vehicle_name} Manual:
 {context}
 """
 
@@ -119,11 +118,16 @@ class SelectVehicleRequest(BaseModel):
 
 @app.post("/select_vehicle")
 def select_vehicle(data: SelectVehicleRequest):
-    global active_vehicle_id, chain_instance
+    global active_vehicle_id, active_vehicle_name, chain_instance
     try:
+        v_list = _get_vehicle_list()
+        v_obj = next((v for v in v_list if v["id"] == data.vehicle_id), None)
+        active_vehicle_name = v_obj["name"] if v_obj else data.vehicle_id
+
+
         chain_instance = _build_chain(data.vehicle_id)
         active_vehicle_id = data.vehicle_id
-        return {"message": f"{data.vehicle_id} loaded successfully.", "vehicle_id": active_vehicle_id}
+        return {"message": f"{active_vehicle_name} loaded successfully.", "vehicle_id": active_vehicle_id}
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Index not found for this vehicle.")
     except Exception as e:
@@ -155,7 +159,7 @@ async def ask(data: AskRequest):
 
             formatted_docs = "\n\n".join(d.page_content for d in docs)
             
-            async for chunk in chain.astream({"input": data.question, "context": formatted_docs}):
+            async for chunk in chain.astream({"input": data.question, "context": formatted_docs, "vehicle_name": active_vehicle_name}):
                 yield f"data: {json.dumps({'type': 'chunk', 'content': chunk})}\n\n"
                 
             yield "data: [DONE]\n\n"

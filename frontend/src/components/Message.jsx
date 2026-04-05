@@ -1,4 +1,5 @@
 import { Sparkles, FileText } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 export default function Message({ msg }) {
   const isUser = msg.role === "user";
@@ -14,7 +15,7 @@ export default function Message({ msg }) {
       </div>
 
       <div className={`bubble ${isUser ? "user-bubble" : "ai-bubble"}`}>
-        {msg.content}
+        <ReactMarkdown>{msg.content}</ReactMarkdown>
 
         {msg.sources?.length > 0 && (
           <div className="sources">
