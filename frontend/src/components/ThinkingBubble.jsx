@@ -4,7 +4,7 @@ export default function ThinkingBubble() {
   return (
     <div className="message ai">
       <div className="message-meta">
-        <Sparkles size={12} /><span>Assistant</span>
+        <span>AutoHelper</span>
       </div>
       <div className="bubble">
         <div className="thinking">
