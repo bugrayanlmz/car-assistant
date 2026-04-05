@@ -9,7 +9,7 @@ export default function Message({ msg }) {
         {isUser ? (
           <><span>You</span><span>·</span><span>{msg.time}</span></>
         ) : (
-          <><Sparkles size={12} /><span>Assistant</span><span>·</span><span>{msg.time}</span></>
+          <><span>AutoHelper</span><span>·</span><span>{msg.time}</span></>
         )}
       </div>
 
