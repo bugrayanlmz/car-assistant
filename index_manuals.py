@@ -13,7 +13,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 DATA_DIR = "./manuals"
-CHROMA_BASE = "./chroma_dbs"
 
 def create_index():
     print(f"Scanning manual directory: {DATA_DIR}")
@@ -23,7 +22,7 @@ def create_index():
 
     os.makedirs(CHROMA_BASE, exist_ok=True)
     
-    print("Loading local Embedding Model all-MiniLM-L6-v2")
+    print("Loading Embedding Model")
     embedding_model = PineconeEmbeddings(
     model="multilingual-e5-large",
     pinecone_api_key=os.getenv("PINECONE_API_KEY")
